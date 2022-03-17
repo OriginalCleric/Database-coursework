@@ -1,3 +1,4 @@
+package Query2;
 import java.io.IOException;
 import java.util.StringTokenizer;
 import java.io.*;

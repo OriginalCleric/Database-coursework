@@ -1,16 +1,12 @@
-import java.io.IOException;
-import java.util.StringTokenizer;
+package Query2;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
+import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 public class Solution {
 
   public static void main(String[] args) throws Exception {
@@ -34,12 +30,12 @@ public class Solution {
     
     Job job = Job.getInstance(conf, "Solution");
     job.setJarByClass(Solution.class);
-    job.setReducerClass(ReduceJoin.class);
+    job.setReducerClass(ReduceJoin.MyReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
 
-    MultipleInputs.addInputPath(job, new Path(salesFile),TextInputFormat.class,SaleMapper.class);
-    MultipleInputs.addInputPath(job, new Path(storeFile),TextInputFormat.class,StoreMapper.class);
+    MultipleInputs.addInputPath(job, new Path(salesFile),FileInputFormat.class,SaleMapper.MyMapper.class);
+    MultipleInputs.addInputPath(job, new Path(storeFile),FileInputFormat.class,StoreMapper.MyMapper.class);
     FileOutputFormat.setOutputPath(job,new Path(outputDir));
     System.exit(job.waitForCompletion(true) ? 0 : 1);
     

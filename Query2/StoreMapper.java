@@ -1,25 +1,25 @@
+package Query2;
 import java.io.IOException;
-import java.util.StringTokenizer;
+//import java.util.StringTokenizer;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
+//import org.apache.hadoop.fs.Path;
+//import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
+//import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+//import org.apache.hadoop.mapreduce.Reducer;
+//import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+//import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /*
 *works with store.dat
 */
-public class Solution {
+public class StoreMapper {
 
-    public static class StoreMapper
+    public static class MyMapper
         extends Mapper<Object, Text, Text, Text>{
 
-        private final static IntWritable one = new IntWritable(1);
         private Text word = new Text();
 
         //eg  path/to/store.dat
@@ -36,7 +36,6 @@ public class Solution {
         String row = value.toString();
         String[] columns = row.split("\\|");
         String storeSk = columns[0];
-        int storeFloor = Interger.parseInt(columns[7]);
         word.set(storeSk);
         context.write(word, new Text("FLOOR,"+columns[7]));
         }

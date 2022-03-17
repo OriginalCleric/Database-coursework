@@ -1,19 +1,20 @@
+package Query2;
+
 import java.io.IOException;
-import java.util.StringTokenizer;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
+//import org.apache.hadoop.fs.Path;
+//import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
+//import org.apache.hadoop.mapreduce.Job;
+//import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+//import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+//import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-public class Solution {
+public class ReduceJoin {
 
-    public static class ReduceJoin
+    public static class MyReducer
         extends Reducer<Text,Text,Text,Text> {
 
         //TODO
@@ -23,10 +24,10 @@ public class Solution {
         public void reduce(Text key, Iterable<Text> values,
                         Context context
                         ) throws IOException, InterruptedException {
-        Double sum = 0;
-        string floor;
+        Double sum = 0.0;
+        String floor="";
         for (Text val : values) {
-            string[] parts = val.toString().split(",");
+            String[] parts = val.toString().split(",");
             if (parts[0] == "FLOOR")
             {
                 floor = parts[1];
@@ -37,7 +38,7 @@ public class Solution {
             }
         }
 
-        Text result = new Text(sum.toString()+","+floors);
+        Text result = new Text(sum.toString()+","+floor);
         context.write(key, result);
         }
     }
