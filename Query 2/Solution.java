@@ -30,17 +30,17 @@ public class Solution {
     conf.set("endDate", endDate);
 
     //TODO
-    /*
-    Job job = Job.getInstance(conf, "word count");
-    job.setJarByClass(WordCount.class);
-    job.setMapperClass(TokenizerMapper.class);
-    job.setCombinerClass(IntSumReducer.class);
-    job.setReducerClass(IntSumReducer.class);
+    
+    Job job = Job.getInstance(conf, "Solution");
+    job.setJarByClass(Solution.class);
+    job.setReducerClass(ReduceJoin.class);
     job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(IntWritable.class);
-    FileInputFormat.addInputPath(job, new Path(args[0]));
-    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    job.setOutputValueClass(Text.class);
+
+    MultipleInputs.addInputPath(job, new Path(salesFile),TextInputFormat.class,SaleMapper.class);
+    MultipleInputs.addInputPath(job, new Path(storeFile),TextInputFormat.class,StoreMapper.class);
+    FileOutputFormat.setOutputPath(job,new Path(outputDir));
     System.exit(job.waitForCompletion(true) ? 0 : 1);
-    */
+    
   }
 }
