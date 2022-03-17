@@ -60,8 +60,8 @@ public class Solution2 {
         Configuration conf = new Configuration();
 
         String k = args[0];
-        String startDate = args[0];
-        String endDate = args[0];
+        String startDate = args[1];
+        String endDate = args[2];
 
         conf.set("startDate", startDate);
         conf.set("endDate", endDate);
