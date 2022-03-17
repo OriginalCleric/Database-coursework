@@ -15,7 +15,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 *works with store.dat
 */
 public static class StoreMapper
-       extends Mapper<Object, Text, Text, IntWritable>{
+       extends Mapper<Object, Text, Text, Text>{
 
     private final static IntWritable one = new IntWritable(1);
     private Text word = new Text();
