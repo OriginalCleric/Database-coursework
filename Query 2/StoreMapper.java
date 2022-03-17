@@ -14,28 +14,31 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 /*
 *works with store.dat
 */
-public static class StoreMapper
-       extends Mapper<Object, Text, Text, Text>{
+public class Solution {
 
-    private final static IntWritable one = new IntWritable(1);
-    private Text word = new Text();
+    public static class StoreMapper
+        extends Mapper<Object, Text, Text, Text>{
 
-    //eg  path/to/store.dat
-    public static String path = "";
+        private final static IntWritable one = new IntWritable(1);
+        private Text word = new Text();
 
-    /*
-    * if the entry is on the correct floor:
-    *   output key: store_sk
-    *          value: floor
-    */
-    public void map(Object key, Text value, Context context
-                    ) throws IOException, InterruptedException {
+        //eg  path/to/store.dat
+        public static String path = "";
 
-      String row = value.toString();
-      String[] columns = row.split("\\|");
-      String storeSk = columns[0];
-      int storeFloor = Interger.parseInt(columns[7]);
-      word.set(storeSk);
-      context.write(word, new Text("FLOOR,"+columns[7]));
+        /*
+        * if the entry is on the correct floor:
+        *   output key: store_sk
+        *          value: floor
+        */
+        public void map(Object key, Text value, Context context
+                        ) throws IOException, InterruptedException {
+
+        String row = value.toString();
+        String[] columns = row.split("\\|");
+        String storeSk = columns[0];
+        int storeFloor = Interger.parseInt(columns[7]);
+        word.set(storeSk);
+        context.write(word, new Text("FLOOR,"+columns[7]));
+        }
     }
 }
