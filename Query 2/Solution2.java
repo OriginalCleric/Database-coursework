@@ -15,7 +15,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class Solution2 {
-    public static String[] args_global;
   
     public static class TokenizerMapper extends Mapper<Object, Text, Text, DoubleWritable>{
         private Text word = new Text();
@@ -24,6 +23,7 @@ public class Solution2 {
             Configuration conf = context.getConfiguration();
             String startDate = conf.get("startDate");
             String endDate = conf.get("endDate");
+            
             StringTokenizer itr = new StringTokenizer(value.toString());
                 while (itr.hasMoreTokens()) {
                     word.set(itr.nextToken());
@@ -65,7 +65,6 @@ public class Solution2 {
 
         conf.set("startDate", startDate);
         conf.set("endDate", endDate);
-
 
         Job job = Job.getInstance(conf, "word count");
         job.setJarByClass(Solution2.class);
