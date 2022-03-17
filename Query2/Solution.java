@@ -4,7 +4,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 public class Solution {
@@ -34,8 +34,8 @@ public class Solution {
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
 
-    MultipleInputs.addInputPath(job, new Path(salesFile),FileInputFormat.class,SaleMapper.MyMapper.class);
-    MultipleInputs.addInputPath(job, new Path(storeFile),FileInputFormat.class,StoreMapper.MyMapper.class);
+    MultipleInputs.addInputPath(job, new Path(salesFile),TextInputFormat.class,SaleMapper.MyMapper.class);
+    MultipleInputs.addInputPath(job, new Path(storeFile),TextInputFormat.class,StoreMapper.MyMapper.class);
     FileOutputFormat.setOutputPath(job,new Path(outputDir));
     System.exit(job.waitForCompletion(true) ? 0 : 1);
     
