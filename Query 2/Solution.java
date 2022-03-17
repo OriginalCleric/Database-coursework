@@ -17,17 +17,18 @@ public class Solution {
     Configuration conf = new Configuration();
 
     //reading the arguments
-    string k = args[0];
-    string startDate = args[1];
-    string endDate = args[2];
-    string salesFile = args[3];
-    string storeFile =args[4];
-    string outputDir = args[5];
+    String k = args[0];
+    String startDate = args[1];
+    String endDate = args[2];
+    String salesFile = args[3];
+    String storeFile =args[4];
+    String outputDir = args[5];
     
 
     //passing arguments to hadoop
     conf.set("startDate", startDate);
     conf.set("endDate", endDate);
+    conf.set("K", k);
 
     //TODO
     

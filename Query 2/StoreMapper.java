@@ -32,8 +32,8 @@ public static class StoreMapper
                     ) throws IOException, InterruptedException {
 
       String row = value.toString();
-      string[] columns = row.split("\\|");
-      string storeSk = columns[0];
+      String[] columns = row.split("\\|");
+      String storeSk = columns[0];
       int storeFloor = Interger.parseInt(columns[7]);
       word.set(storeSk);
       context.write(word, new Text("FLOOR,"+columns[7]));
