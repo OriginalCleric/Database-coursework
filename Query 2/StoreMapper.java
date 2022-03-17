@@ -21,9 +21,9 @@ public static class StoreMapper
     private Text word = new Text();
 
     //eg  path/to/store.dat
-    public String path = "";
+    public static String path = "";
 
-    public int floor = 0;
+    public static int floor = 0;
 
     /*
     * if the entry is on the correct floor:
@@ -33,20 +33,14 @@ public static class StoreMapper
     public void map(Object key, Text value, Context context
                     ) throws IOException, InterruptedException {
 
-      StringTokenizer itr = new StringTokenizer(value.toString());
-      while (itr.hasMoreTokens()) {
-        word.set(itr.nextToken());
-        context.write(word, one);
-      }
-
       String row = value.toString();
-      string[] columns = row.split(",");
+      string[] columns = row.split("\\|");
       string storeSk = columns[0];
       int storeFloor = Interger.parseInt(columns[7]);
-      if (storeFloor == this.floor)
+      if (storeFloor == StoreMapper.floor)
       {
         word.set(storeSk);
-        context.write(word, new IntWritable(storeFloor));
+        context.write(word, new Text("FLOOR,"+columns[7]));
         
       }
     }
