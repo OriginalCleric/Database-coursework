@@ -23,8 +23,6 @@ public static class StoreMapper
     //eg  path/to/store.dat
     public static String path = "";
 
-    public static int floor = 0;
-
     /*
     * if the entry is on the correct floor:
     *   output key: store_sk
@@ -37,11 +35,7 @@ public static class StoreMapper
       string[] columns = row.split("\\|");
       string storeSk = columns[0];
       int storeFloor = Interger.parseInt(columns[7]);
-      if (storeFloor == StoreMapper.floor)
-      {
-        word.set(storeSk);
-        context.write(word, new Text("FLOOR,"+columns[7]));
-        
-      }
+      word.set(storeSk);
+      context.write(word, new Text("FLOOR,"+columns[7]));
     }
 }
