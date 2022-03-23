@@ -46,8 +46,9 @@ public class MapReduce {
                 String[] array = s.split("\\|");
 
                 // Get results where the date lies between the provided start and end dates
-                if (array[7].length() == 0 || array.length < 22 || array[0].length() == 0 || array[21].length() == 0
-                || Integer.parseInt(array[0]) <= Integer.parseInt(startDate) || Integer.parseInt(array[0]) >= Integer.parseInt(endDate)){
+                //if (array[7].length() == 0 || array.length < 22 || array[0].length() == 0 || array[21].length() == 0
+                if (array.length < 23 || array[0].length() == 0 || array[21].length() == 0
+                || Integer.parseInt(array[0]) < Integer.parseInt(startDate) || Integer.parseInt(array[0]) > Integer.parseInt(endDate)){
                     continue;
                 }
                 context.write(new Text(array[0]), new DoubleWritable(Float.parseFloat(array[21])));
@@ -58,6 +59,14 @@ public class MapReduce {
     public static class IntSumReducer extends Reducer<Text,DoubleWritable,Text,DoubleWritable> {
         private DoubleWritable result = new DoubleWritable();
 
+        /**
+         * Reduces a set of intermediate values which share a key to a smaller set of values, in this case finding the sum
+         * of values for each key
+         * Called once for each key/value pair in the input split.
+         * @param key key in key/value input pair
+         * @param value value in key/value input pair
+         * @param context allows the Mapper to interact with the rest of the Hadoop system
+         */
         public void reduce(Text key, Iterable<DoubleWritable> values,Context context) throws IOException, InterruptedException {
             float sum = 0;
             for (DoubleWritable val : values) {
@@ -72,17 +81,23 @@ public class MapReduce {
         public PriorityQueue<Map.Entry<DoubleWritable,IntWritable>> myQueue;
         private int K;
 
+        /**
+         * Called once at the beginning of the task to initialise class variables
+         * @param context allows the Mapper to interact with the rest of the Hadoop system
+         */
         @Override
         public void setup(Context context) throws IOException, InterruptedException{
             this.myQueue = new PriorityQueue<Map.Entry<DoubleWritable,IntWritable>>(Map.Entry.comparingByKey(Comparator.reverseOrder()));
             this.K = Integer.parseInt(context.getConfiguration().get("K"));
         }
 
-        /*
-        * ss_sold_date_sk at column 1
-        * ss_quantity at column 11
-        * ss_item_sk at column 3
-        */
+        /**
+         * Maps input key/value pairs to a set of intermediate key/value pair
+         * Called once for each key/value pair in the input split.
+         * @param key key in key/value input pair
+         * @param value value in key/value input pair
+         * @param context allows the Mapper to interact with the rest of the Hadoop system
+         */
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             String[] row = value.toString().split("\t");
             DoubleWritable valb = new DoubleWritable(Double.parseDouble(row[1]));
@@ -91,6 +106,10 @@ public class MapReduce {
             myQueue.add(new AbstractMap.SimpleEntry<DoubleWritable,IntWritable>(valb,ID));
         }
 
+        /**
+         * Called once at the end of the task to write the final values to the context
+         * @param context allows the Mapper to interact with the rest of the Hadoop system
+         */
         @Override
         public void cleanup(Context context) throws IOException, InterruptedException{
             int max = myQueue.size();
@@ -106,12 +125,24 @@ public class MapReduce {
         public PriorityQueue<Map.Entry<DoubleWritable,IntWritable>> myQueue;
         private int K=0;
 
+        /**
+         * Called once at the beginning of the task to initialise class variables
+         * @param context allows the Mapper to interact with the rest of the Hadoop system
+         */
         @Override
         public void setup(Context context) throws IOException, InterruptedException{
             this.myQueue = new PriorityQueue<Map.Entry<DoubleWritable,IntWritable>>(Map.Entry.comparingByKey(Comparator.reverseOrder()));
             this.K = Integer.parseInt(context.getConfiguration().get("K"));
         }
- 
+        
+        /**
+         * Reduces a set of intermediate values which share a key to a smaller set of values
+         * of values for each key
+         * Called once for each key/value pair in the input split.
+         * @param key key in key/value input pair
+         * @param value value in key/value input pair
+         * @param context allows the Mapper to interact with the rest of the Hadoop system
+         */
         public void reduce(IntWritable key, Iterable<DoubleWritable> values,Context context) throws IOException, InterruptedException {
            for(DoubleWritable val:values){
                 DoubleWritable valb = new DoubleWritable(val.get());
@@ -121,6 +152,10 @@ public class MapReduce {
            }
         }
 
+        /**
+         * Called once at the end of the task to write the final values to the context
+         * @param context allows the Mapper to interact with the rest of the Hadoop system
+         */
         @Override
         public void cleanup(Context context) throws IOException, InterruptedException{
             int max = myQueue.size();
@@ -131,6 +166,11 @@ public class MapReduce {
         }
     }
 
+    /**
+     * Driver Function to initialise the mapreduce job(s)
+     * @param args arguments passed in to the function through the command line. Format k, startDate, endDate, inputPath, outputPath
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         if (args.length<5) return;
         String k = args[0];

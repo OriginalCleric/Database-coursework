@@ -18,22 +18,7 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 
-public class Solution {
-
-    public static class CompositeKey<K1 extends Comparable<K1>,K2 extends Comparable<K2>> implements Comparable<CompositeKey<K1,K2>>
-    {
-        public K1 key1; public K2 key2;
-
-        public CompositeKey(K1 k1,K2 k2){
-            key1=k1; key2=k2;
-        }
-
-        public int compareTo(CompositeKey<K1,K2> other) {
-            int result = key1.compareTo(other.key1);
-            if(result==0){ result = key2.compareTo(other.key2);}
-            return result;
-        }
-    }
+public class MapReduce {
      
     public static class MyMapper extends Mapper<Object, Text, IntWritable, IntWritable>{
         Map<Integer,Integer> localSum;
@@ -62,22 +47,16 @@ public class Solution {
             String[] row = value.toString().split("\\|");
 
             // Get results where the date lies between the provided start and end dates
-            if ( row.length < 11 || row[2].length()==0 || row[0].length()==0
+            if ( row.length < 21 || row[0].length()==0
             || Integer.parseInt(row[0]) < startDate || Integer.parseInt(row[0]) > endDate){
                 return;
             }
 
-            if (row[10].length() != 0){
-                int ID = Integer.parseInt(row[2]);
-                int num = Integer.parseInt(row[10]);
-                //context.write(new IntWritable(ID), new IntWritable(num));
-                
-                if (!this.localSum.containsKey(ID)){
-                    this.localSum.put(ID, num);
-                }else{
-                    this.localSum.replace(ID, num+localSum.get(ID));
-                }
-                
+            int date = Integer.parseInt(row[0]);
+            if (!this.localSum.containsKey(date)){
+                this.localSum.put(date, 1);
+            }else{
+                this.localSum.replace(date, 1+localSum.get(date));
             }
         }
 
@@ -93,8 +72,7 @@ public class Solution {
         }
     }
 
-    public static class MyReducer extends Reducer<IntWritable,IntWritable,Text,IntWritable> {
-        public PriorityQueue<Map.Entry<CompositeKey<Integer,Integer>,Integer>> myQueue;
+    public static class MyReducer extends Reducer<IntWritable,IntWritable,IntWritable,IntWritable> {
         private int K;
 
         /**
@@ -103,7 +81,7 @@ public class Solution {
          */
         @Override
         public void setup(Context context) throws IOException, InterruptedException{
-            this.myQueue = new PriorityQueue<Map.Entry<CompositeKey<Integer,Integer>,Integer>>(Map.Entry.comparingByKey());
+            //this.myQueue = new PriorityQueue<Map.Entry<CompositeKey<Integer,Integer>,Integer>>(Map.Entry.comparingByKey());
             this.K = Integer.parseInt(context.getConfiguration().get("K"));
         }
 
@@ -121,33 +99,7 @@ public class Solution {
                 sum += val.get();
             }
 
-            int ID = key.get();
-            CompositeKey<Integer,Integer> newKey = new CompositeKey<Integer,Integer>(sum,ID);
-
-            // Limit queue size to input parameter K
-            if (myQueue.size() >= K){
-                if (myQueue.peek().getKey().compareTo(newKey)>0){ return;}
-                myQueue.poll();
-            }
-            myQueue.add(new AbstractMap.SimpleEntry<CompositeKey<Integer,Integer> ,Integer>(newKey,1));
-        }
-
-        /**
-         * Called once at the end of the task to write the final values to the context
-         * @param context allows the Mapper to interact with the rest of the Hadoop system
-         */
-        @Override
-        public void cleanup(Context context) throws IOException, InterruptedException{
-            int max = myQueue.size();
-            CompositeKey<Integer,Integer>[] results = new CompositeKey[max];
-
-            for (int i=0;i<max;i++){
-                results[i] = myQueue.poll().getKey(); 
-            }
-
-            for (int i = max-1;i>=0;i--){
-                context.write(new Text("LMAO:"+results[i].key2.toString()), new IntWritable(results[i].key1));
-            }
+            context.write(new IntWritable(key.get()), new IntWritable(sum));
         }
     }
 
@@ -174,13 +126,13 @@ public class Solution {
 
         Job job1 = Job.getInstance(conf1, "Select");
         job1.setNumReduceTasks(reducerNum);
-        job1.setJarByClass(Solution.class);
+        job1.setJarByClass(MapReduce.class);
         job1.setMapperClass(MyMapper.class);
         job1.setReducerClass(MyReducer.class);
         
         job1.setMapOutputKeyClass(IntWritable.class);
         job1.setMapOutputValueClass(IntWritable.class);
-        job1.setOutputKeyClass(Text.class);
+        job1.setOutputKeyClass(IntWritable.class);
         job1.setOutputValueClass(IntWritable.class);
         TextInputFormat.addInputPath(job1, new Path(inputPath));
 

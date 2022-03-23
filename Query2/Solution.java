@@ -150,6 +150,11 @@ public class Solution {
 		}
 	}
 
+	/**
+     * Driver Function to initialise the mapreduce job(s)
+     * @param args arguments passed in to the function through the command line. Format k, startDate, endDate, file1_inputPath, file2_inputPath, outputPath
+     * @throws Exception
+     */
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
 

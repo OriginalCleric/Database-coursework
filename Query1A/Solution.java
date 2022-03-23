@@ -50,7 +50,6 @@ public class Solution {
             || Integer.parseInt(row[0]) < startDate || Integer.parseInt(row[0]) > endDate){
                 return;
             }
-
             context.write(new IntWritable(Integer.parseInt(row[7])), new DoubleWritable(Double.parseDouble(row[20])));
         }
     }
@@ -203,7 +202,7 @@ public class Solution {
     }
 
     /**
-     * 
+     * Driver Function to initialise the mapreduce job(s)
      * @param args arguments passed in to the function through the command line. Format k, startDate, endDate, inputPath, outputPath
      * @throws Exception
      */
