@@ -252,7 +252,7 @@ public class Solution {
         }else
         {
             Path job1OutputPath = new Path(outputPath);
-            TextFileOutputFormat.setOutputPath(job1, job1OutputPath);
+            TextOutputFormat.setOutputPath(job1, job1OutputPath);
             job1.waitForCompletion(true);
         }
     }
