@@ -70,13 +70,15 @@ public class Solution {
             if (row[10].length() != 0){
                 int ID = Integer.parseInt(row[2]);
                 int num = Integer.parseInt(row[10]);
-                //context.write(new IntWritable(ID), new IntWritable(num));
+                context.write(new IntWritable(ID), new IntWritable(num));
                 
+                /*
                 if (!this.localSum.containsKey(ID)){
                     this.localSum.put(ID, num);
                 }else{
                     this.localSum.replace(ID, num+localSum.get(ID));
                 }
+                */
                 
             }
         }
@@ -87,9 +89,11 @@ public class Solution {
          */
         @Override
         public void cleanup(Context context) throws IOException, InterruptedException{
+            /*
             for (Map.Entry<Integer,Integer> i: localSum.entrySet()){
                 context.write(new IntWritable(i.getKey()), new IntWritable(i.getValue()));
             }
+            */
         }
     }
 

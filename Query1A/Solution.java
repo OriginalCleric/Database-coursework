@@ -83,7 +83,7 @@ public class Solution {
             }
             
             // Limit queue size to input parameter K
-            if (myQueue.size() >= K){
+            if (myQueue.size() >= this.K){
                 if (myQueue.peek().getKey().compareTo(sum)>0){ return;}
                 myQueue.poll();
             }
@@ -106,18 +106,6 @@ public class Solution {
 
 
     public static class SortMapper extends Mapper<Object, Text, IntWritable, DoubleWritable>{
-        public PriorityQueue<Map.Entry<Double,Integer>> myQueue;
-        private int K;
-
-        /**
-         * Called once at the beginning of the task to initialise class variables
-         * @param context allows the Mapper to interact with the rest of the Hadoop system
-         */
-        @Override
-        public void setup(Context context) throws IOException, InterruptedException {
-            this.myQueue = new PriorityQueue<Map.Entry<Double,Integer>>(Map.Entry.comparingByKey(Comparator.reverseOrder()));
-            this.K = Integer.parseInt(context.getConfiguration().get("K"));
-        }
 
         /**
          * Maps input key/value pairs to a set of intermediate key/value pair, sorted by net_profit
@@ -128,29 +116,9 @@ public class Solution {
          */
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             String[] row = value.toString().split("\t");
-            Double numPaid = Double.parseDouble(row[1]);
-            int ID = Integer.parseInt(row[0]);
-            
-            if (myQueue.size() >= K){
-                if (myQueue.peek().getKey().compareTo(numPaid)>0){return;}
-                myQueue.poll();
-            }
-            
-            myQueue.add(new AbstractMap.SimpleEntry<Double,Integer>(numPaid,ID));
+            context.write(new IntWritable(Integer.parseInt(row[0])), new DoubleWritable(Double.parseDouble(row[1])));
         }
 
-        /**
-         * Called once at the end of the task to write the final values to the context
-         * @param context allows the Mapper to interact with the rest of the Hadoop system
-         */
-        @Override
-        public void cleanup(Context context) throws IOException, InterruptedException{
-            int max = myQueue.size();
-            for (int i=0;i<max;i++){
-                Map.Entry<Double,Integer> current = myQueue.poll();
-                context.write( new IntWritable(current.getValue()),new DoubleWritable(current.getKey()));
-            }
-        }
     }
 
     public static class SortReducer extends Reducer<IntWritable,DoubleWritable,IntWritable,DoubleWritable> {
@@ -163,7 +131,7 @@ public class Solution {
          */
         @Override
         public void setup(Context context) throws IOException, InterruptedException{
-            this.myQueue = new PriorityQueue<Map.Entry<Double,Integer>>(Map.Entry.comparingByKey(Comparator.reverseOrder()));
+            this.myQueue = new PriorityQueue<Map.Entry<Double,Integer>>(Map.Entry.comparingByKey());
             this.K = Integer.parseInt(context.getConfiguration().get("K"));
         }
  
@@ -179,7 +147,7 @@ public class Solution {
            
            for(DoubleWritable val:values){
                 numPaid = val.get();
-                if (myQueue.size() >= K){
+                if (myQueue.size() >= this.K){
                     if (myQueue.peek().getKey().compareTo(numPaid)>0){return;}
                     myQueue.poll();
                 }
@@ -240,7 +208,7 @@ public class Solution {
             conf2.set("K", k);
             Job job2 = Job.getInstance(conf2, "Sort");
             job2.setJarByClass(Solution.class);
-            job2.setMapperClass(SortMapper.class);
+           // job2.setMapperClass(SortMapper.class);
             job2.setNumReduceTasks(1);
             job2.setReducerClass(SortReducer.class);
             job2.setOutputKeyClass(IntWritable.class);
