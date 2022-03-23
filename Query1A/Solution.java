@@ -182,7 +182,7 @@ public class Solution {
         String inputPath = args[3];
         String outputPath = args[4];
 
-        int reducerNum = 8;
+        int reducerNum = 1;
         //Job 1: selecting and aggregation
         Configuration conf1 = new Configuration();
         conf1.set("startDate", startDate);
