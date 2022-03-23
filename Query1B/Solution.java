@@ -146,7 +146,7 @@ public class Solution {
             }
 
             for (int i = max-1;i>=0;i--){
-                context.write(new Text("LMAO:"+results[i].key2.toString()), new IntWritable(results[i].key1));
+                context.write(new Text("ss_item_sk:"+results[i].key2.toString()), new IntWritable(results[i].key1));
             }
         }
     }

@@ -214,7 +214,7 @@ public class Solution {
         String inputPath = args[3];
         String outputPath = args[4];
 
-        int reducerNum = 1;
+        int reducerNum = 8;
         //Job 1: selecting and aggregation
         Configuration conf1 = new Configuration();
         conf1.set("startDate", startDate);
@@ -229,12 +229,13 @@ public class Solution {
         job1.setOutputKeyClass(IntWritable.class);
         job1.setOutputValueClass(DoubleWritable.class);
         TextInputFormat.addInputPath(job1, new Path(inputPath));
-        Path job1OutputPath = new Path(outputPath+"_temp");
-        SequenceFileOutputFormat.setOutputPath(job1, job1OutputPath);
-        job1.waitForCompletion(true);
-        System.out.println(job1.getNumReduceTasks());
-        if (reducerNum>=1)
+
+        if (reducerNum>1)
         {
+            Path job1OutputPath = new Path(outputPath+"_temp");
+            SequenceFileOutputFormat.setOutputPath(job1, job1OutputPath);
+            job1.waitForCompletion(true);
+
             Configuration conf2 = new Configuration();
             conf2.set("K", k);
             Job job2 = Job.getInstance(conf2, "Sort");
@@ -248,6 +249,11 @@ public class Solution {
             TextOutputFormat.setOutputPath(job2, new Path(outputPath));
             job2.waitForCompletion(true);
             //System.exit(job2.waitForCompletion(true) ? 0 : 1);
+        }else
+        {
+            Path job1OutputPath = new Path(outputPath);
+            TextFileOutputFormat.setOutputPath(job1, job1OutputPath);
+            job1.waitForCompletion(true);
         }
     }
 }
