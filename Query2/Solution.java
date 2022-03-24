@@ -115,7 +115,7 @@ public class Solution {
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException{
 			String row = value.toString();
 			String[] columns = row.split("\\|");
-			if(columns[7].length() == 0 || columns.length < 7 || columns[0].length() == 0){
+			if(columns[7].length() == 0 || columns[0].length() == 0){
 				return;
 			}
 			context.write(new IntWritable(Integer.parseInt(columns[0])), new Text("FLOOR,"+columns[7]));
@@ -142,7 +142,7 @@ public class Solution {
 			String[] array = s.split("\\|");
 
 			// Get results where the date lies between the provided start and end dates
-			if (array[7].length() == 0 || array.length < 21 || array[0].length() == 0 || array[20].length() == 0
+			if (array.length < 21|| array[7].length() == 0 || array[0].length() == 0 || array[20].length() == 0
 			|| Integer.parseInt(array[0]) < Integer.parseInt(startDate) || Integer.parseInt(array[0]) > Integer.parseInt(endDate)){
 				return;
 			}
